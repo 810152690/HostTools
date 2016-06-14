@@ -7,6 +7,7 @@
 //
 
 import XCTest
+//import ShellToos
 @testable import HostTools
 
 class HostToolsTests: XCTestCase {
@@ -24,6 +25,7 @@ class HostToolsTests: XCTestCase {
     func testExample() {
         // This is an example of a functional test case.
         // Use XCTAssert and related functions to verify your tests produce the correct results.
+        ShellToolTest.testChangeHosts();
     }
     
     func testPerformanceExample() {
