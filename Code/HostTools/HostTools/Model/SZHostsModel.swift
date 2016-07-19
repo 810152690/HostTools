@@ -12,8 +12,8 @@ import Foundation
 class SZHostsModel : NSObject, NSCoding {
     var hostName : String?
     var hostContent : String?
-    var bSingleSelected : Bool = false//单机选中
-    var bDoubleSelected : Bool = false//双击选中
+    var bSingleSelected : Bool = false//单机选中(当前编辑的host)
+    var bDoubleSelected : Bool = false//双击选中(当前系统的host)
     var normalTextColor : NSColor = NSColor.grayColor();
     var normalBgColor : NSColor = NSColor.init(deviceRed: 240.0/255.0, green: 240.0/255.0, blue: 240.0/255.0, alpha: 1.0);
     

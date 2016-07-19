@@ -28,9 +28,10 @@ class ViewController: NSViewController, NSTableViewDelegate, NSTableViewDataSour
         super.viewDidLoad()
 
         self.readHosts();
-        let selectedHost = self.getSelectedHostModel();
-        if (selectedHost != nil){
-            txtHostContent.string = selectedHost?.hostContent;
+        let systemHost = self.getSystemHostModel();
+        if (systemHost != nil){
+            editingModel = systemHost;
+            txtHostContent.string = systemHost?.hostContent;
         }
         tableHosts.reloadData();
         
@@ -51,24 +52,25 @@ class ViewController: NSViewController, NSTableViewDelegate, NSTableViewDataSour
         if selectedRow >= 0{
             let selectedModel = dataHosts[selectedRow];
             
-            let content = selectedModel.hostContent;
-            if ((content?.isEmpty) != nil){
+//            let content = selectedModel.hostContent;
+            if (/*(content?.isEmpty) != nil*/true){
                 self.resetDoubleClickedHostListData();
                 selectedModel.bDoubleSelected = true;
                 selectedModel.bSingleSelected = true;
-                
+                editingModel = selectedModel;
                 txtHostContent.string = selectedModel.hostContent;//修改右边显示的host文件
                 self.saveHosts();//存储文件
                 
                 ShellTool.changeHosts(txtHostContent.string!);
-            }else{
-                let alert = NSAlert();
-                alert.messageText = "请输入host内容";
-                alert.addButtonWithTitle("确定");
-                alert.beginSheetModalForWindow(NSApp.mainWindow!) { (NSModalResponse selectedButton) -> Void in
-                    
-                }
             }
+//            else{
+//                let alert = NSAlert();
+//                alert.messageText = "请输入host内容";
+//                alert.addButtonWithTitle("确定");
+//                alert.beginSheetModalForWindow(NSApp.mainWindow!) { (NSModalResponse selectedButton) -> Void in
+//                    
+//                }
+//            }
         }
     }
 
@@ -113,22 +115,23 @@ class ViewController: NSViewController, NSTableViewDelegate, NSTableViewDataSour
         tableHosts.reloadData();
     }
     
-    func getSelectedHostModel() -> SZHostsModel?{
-        var selectModel : SZHostsModel?;
+    func getSystemHostModel() -> SZHostsModel?{
+        var systemModel : SZHostsModel?;
         for item in dataHosts{
-            if (item.bSingleSelected == true) {
-                selectModel = item;
+            if (item.bDoubleSelected == true) {
+                systemModel = item;
             }
         }
         
-        if selectModel == nil {
+        if systemModel == nil {
             if dataHosts.count > 0{
-                selectModel = dataHosts.first;//如果没有选择， 则取第一个
+                systemModel = dataHosts.first;//如果没有选择， 则取第一个
+                systemModel?.bDoubleSelected = true;
             }else{
                 return nil;
             }
         }
-        return selectModel;
+        return systemModel;
     }
     
     func removeSelectedHost() {
@@ -173,14 +176,19 @@ class ViewController: NSViewController, NSTableViewDelegate, NSTableViewDataSour
         if !(content!.isEmpty){
             editingModel?.hostContent = txtHostContent!.string;
             
-            self.saveHosts();
+            
         }else{
-            let alert = NSAlert();
-            alert.messageText = "请输入host内容";
-            alert.addButtonWithTitle("确定");
-            alert.beginSheetModalForWindow(NSApp.mainWindow!) { (NSModalResponse selectedButton) -> Void in
-                
-            }
+            editingModel?.hostContent = "";
+//            let alert = NSAlert();
+//            alert.messageText = "请输入host内容";
+//            alert.addButtonWithTitle("确定");
+//            alert.beginSheetModalForWindow(NSApp.mainWindow!) { (NSModalResponse selectedButton) -> Void in
+//                
+//            }
+        }
+        self.saveHosts();
+        if editingModel?.bDoubleSelected == true {
+            ShellTool.changeHosts(txtHostContent.string!);
         }
     }
     
@@ -236,6 +244,7 @@ class ViewController: NSViewController, NSTableViewDelegate, NSTableViewDataSour
                 txtHostContent.string = "";
             }
             selectModel.bSingleSelected = true;
+            editingModel = selectModel;
             tableHosts.reloadData();
         }
     
